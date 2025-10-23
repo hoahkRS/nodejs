@@ -14,9 +14,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Static
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
-// Health check
+// API docs dashboard at root
 app.get('/', (req, res) => {
+  return res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
+});
+
+// JSON health check
+app.get('/health', (req, res) => {
   return R.success(res, { status: 'ok' }, 'API is running');
 });
 

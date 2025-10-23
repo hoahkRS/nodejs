@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes API Docs</title>
+  <style>
+    :root { --bg: #0f172a; --card: #111827; --muted: #9ca3af; --fg: #e5e7eb; --primary: #60a5fa; --accent: #34d399; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: linear-gradient(180deg, #0b1220, #0f172a); color: var(--fg); }
+    header { padding: 40px 20px 10px; text-align: center; }
+    header h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: .3px; }
+    header p { margin: 0; color: var(--muted); }
+    main { max-width: 1000px; margin: 20px auto 60px; padding: 0 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card { background: rgba(17,24,39,.7); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.06); border-radius: 12px; padding: 16px; }
+    .title { display:flex; align-items:center; gap:8px; font-weight: 600; margin-bottom: 8px; }
+    code, pre { background: rgba(255,255,255,0.06); color: #e2e8f0; padding: 2px 6px; border-radius: 6px; }
+    pre { padding: 12px; overflow: auto; border: 1px solid rgba(255,255,255,.08); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.08); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; text-align: left; }
+    a { color: var(--primary); text-decoration: none; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .get { background: rgba(52, 211, 153, .15); color: var(--accent); border: 1px solid rgba(52, 211, 153, .35); }
+    .post { background: rgba(96, 165, 250, .15); color: var(--primary); border: 1px solid rgba(96, 165, 250, .35); }
+    .patch { background: rgba(251, 146, 60, .15); color: #fb923c; border: 1px solid rgba(251, 146, 60, .35); }
+    .delete { background: rgba(248, 113, 113, .15); color: #f87171; border: 1px solid rgba(248, 113, 113, .35); }
+    footer { text-align:center; color: var(--muted); padding: 24px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Notes API — Documentation</h1>
+    <p>JWT auth, pagination, sorting, file upload (avatar), SendGrid integration</p>
+  </header>
+  <main>
+    <section class="grid">
+      <div class="card">
+        <div class="title">🚦 Quick Start</div>
+        <p>Base URL: <code>http://localhost:<span id="port">3000</span></code></p>
+        <p>Health check: <code>GET /health</code></p>
+        <p>Static uploads: <code>GET /uploads/...</code></p>
+        <p>Auth header: <code>Authorization: Bearer &lt;token&gt;</code></p>
+        <script>
+          document.getElementById('port').textContent = location.port || '3000';
+        </script>
+      </div>
+      <div class="card">
+        <div class="title">🔐 Auth</div>
+        <ul>
+          <li><span class="pill post">POST</span> <code>/users/login</code> — JSON or form-data (email, password)</li>
+          <li>Token expiry: <code>JWT_EXPIRES_IN</code> (.env)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="title">🧰 Query helpers</div>
+        <ul>
+          <li>Pagination: <code>?limit=10&page=1</code></li>
+          <li>Sorting (notes): <code>?sortBy=createdAt&sortType=desc</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title">👤 Users</div>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill post">POST</span></td><td><code>/users</code></td><td>Register (multipart optional: <code>avatar</code>)</td></tr>
+          <tr><td><span class="pill post">POST</span></td><td><code>/users/login</code></td><td>Login (JSON or form-data)</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td><code>/users</code></td><td>List users (auth)</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td><code>/users/:id</code></td><td>Get user by id (auth)</td></tr>
+          <tr><td><span class="pill patch">PATCH</span></td><td><code>/users/:id</code></td><td>Update (name/email/password, multipart avatar) (auth)</td></tr>
+          <tr><td><span class="pill delete">DELETE</span></td><td><code>/users/:id</code></td><td>Delete user (auth)</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td><code>/users/:id/avatar</code></td><td>Get avatar file (public)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title">🗒️ Notes</div>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill post">POST</span></td><td><code>/notes</code></td><td>Create note (auth) — seeds sample notes for tests</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td><code>/notes</code></td><td>List notes (auth) — supports pagination + sorting</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td><code>/notes/:id</code></td><td>Get note by id (owner only)</td></tr>
+          <tr><td><span class="pill patch">PATCH</span></td><td><code>/notes/:id</code></td><td>Update note (owner only)</td></tr>
+          <tr><td><span class="pill delete">DELETE</span></td><td><code>/notes/:id</code></td><td>Delete note (owner only)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="title">⚙️ Environment</div>
+      <pre>
+PORT=3000
+MONGO_URI=mongodb://localhost:27017/nodejs
+JWT_SECRET=change_me_super_secret
+JWT_EXPIRES_IN=1d
+UPLOADS_DIR=uploads
+MAX_UPLOAD_SIZE_MB=2
+      </pre>
+    </section>
+
+  </main>
+  <footer>
+    Served from <code>/</code>. JSON health at <code>/health</code>.
+  </footer>
+</body>
+</html>
