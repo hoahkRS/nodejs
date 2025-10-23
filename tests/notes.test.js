@@ -16,7 +16,8 @@ describe('Notes module', () => {
 
   beforeAll(async () => {
     process.env.NODE_ENV = 'test';
-    process.env.MONGO_URI = process.env.MONGO_URI_TEST || 'mongodb://localhost:27017/nodejs_test';
+    // Force local DB for tests to avoid network dependency
+    process.env.MONGO_URI = 'mongodb://localhost:27017/nodejs_test';
     await connectDB();
   });
 
